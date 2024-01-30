@@ -1,0 +1,10 @@
+from tkinter import Tk, Entry, Listbox, END, StringVar, ACTIVE
+master = Tk()
+text = StringVar()
+entry = Entry(master, textvariable=text)
+entry.pack()
+listbox = Listbox(master)
+listbox.pack()
+entry.bind('<Return>', lambda e: listbox.insert(END, text.get()))
+listbox.bind('<Double-Button-1>', lambda e: text.set(listbox.get(ACTIVE)))
+master.mainloop()
