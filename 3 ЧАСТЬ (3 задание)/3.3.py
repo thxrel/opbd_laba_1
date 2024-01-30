@@ -1,92 +1,60 @@
-import customtkinter as ctk
+import tkinter as tk
 from tkinter import messagebox
+import customtkinter
 
+class LoginWindow(customtkinter.CTk):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
-class LoginWindow(ctk.CTkToplevel):
-    def __init__(self, master):
-        super().__init__(master)
-        self.title("Login")
-        self.geometry("200x150")
+        self.title("Вход в систему")
+        self.geometry("300x150")
 
-        self.username_label = ctk.CTkLabel(self, text="Имя пользователя:")
+        self.username_label = customtkinter.CTkLabel(self, text="Логин:")
         self.username_label.pack()
-        self.username_entry = ctk.CTkEntry(self)
+
+        self.username_entry = customtkinter.CTkEntry(self)
         self.username_entry.pack()
 
-        self.password_label = ctk.CTkLabel(self, text="Пароль:")
+        self.password_label = customtkinter.CTkLabel(self, text="Пароль:")
         self.password_label.pack()
-        self.password_entry = ctk.CTkEntry(self, show="*")
+
+        self.password_entry = customtkinter.CTkEntry(self, show="*")
         self.password_entry.pack()
 
-        self.login_button = ctk.CTkButton(self, text="Login", command=self.on_login)
+        self.login_button = customtkinter.CTkButton(self, text="Войти", command=self.login)
         self.login_button.pack()
 
-    def on_login(self):
-        if self.username_entry.get() == "admin" and self.password_entry.get() == "admin":
-            self.master.show_main_window()
-            self.destroy()
+    def login(self):
+        username = self.username_entry.get()
+        password = self.password_entry.get()
+
+        if username == "admin" and password == "admin":
+            self.withdraw()
+            MainWindow(self).mainloop()
         else:
-            messagebox.showerror("Ошибка", "Неверное имя пользователя или пароль")
+            messagebox.showerror("Ошибка", "Неверный логин или пароль")
 
-class MainApplication(ctk.CTk):
-    def __init__(self):
-        super().__init__()
+class MainWindow(customtkinter.CTk):
+    def __init__(self, login_window, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.title("Основное окно")
+        self.geometry("600x400")
+
+        # Ваш функционал здесь
+        self.label = customtkinter.CTkLabel(self, text="Добро пожаловать в основное окно!")
+        self.label.pack()
+
+        # Пример добавления кнопки для выхода из системы
+        self.logout_button = customtkinter.CTkButton(self, text="Выйти", command=self.logout)
+        self.logout_button.pack()
+
+        self.login_window = login_window
+
+    def logout(self):
         self.withdraw()
-        self.login_window = LoginWindow(self)
-        self.login_window.lift()
-
-        self.task_list = []
-        self.main_window = None
-
-    def show_main_window(self):
-        self.main_window = MainWindow(self)
-        self.deiconify()
-
-class MainWindow(ctk.CTkToplevel):
-    def __init__(self, master):
-        super().__init__(master)
-        self.title("Task Manager")
-        self.geometry("400x500")
-
-        self.task_entry = ctk.CTkEntry(self)
-        self.task_entry.pack(pady=5)
-
-        self.add_button = ctk.CTkButton(self, text="Добавить", command=self.add_task)
-        self.add_button.pack(pady=5)
-
-        self.task_frame = ctk.CTkFrame(self)
-        self.task_frame.pack(pady=5, fill="both", expand=True)
-
-        self.task_scrollable_frame = ctk.CTkScrollableFrame(self.task_frame)
-        self.task_scrollable_frame.pack(pady=5, fill="both", expand=True)
-
-        self.task_listbox = CTkListbox(self.task_scrollable_frame)
-        self.task_listbox.pack(pady=5, fill="both", expand=True)
-
-        self.complete_button = ctk.CTkButton(self, text="Завершить", command=self.complete_task)
-        self.complete_button.pack(pady=5)
-
-        self.delete_button = ctk.CTkButton(self, text="Убрать", command=self.delete_task)
-        self.delete_button.pack(pady=5)
-
-    def add_task(self):
-        task = self.task_entry.get()
-        if task:
-            self.task_listbox.insert(ctk.END, task)
-            self.task_entry.delete(0, ctk.END)
-
-    def delete_task(self):
-        selected = self.task_listbox.curselection()
-        if selected:
-            self.task_listbox.delete(selected)
-
-    def complete_task(self):
-        selected = self.task_listbox.curselection()
-        if selected:
-            task = self.task_listbox.get(selected)
-            self.task_listbox.delete(selected)
-            self.task_listbox.insert(ctk.END, f"✔ {task}")
+        self.login_window.deiconify()
 
 if __name__ == "__main__":
-    app = MainApplication()
+    app = LoginWindow()
     app.mainloop()
